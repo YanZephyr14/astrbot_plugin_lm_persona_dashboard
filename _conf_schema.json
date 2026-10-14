@@ -5,19 +5,22 @@
     "default": ""
   },
   "page_size": {
-    "type": "number",
+    "type": "int",
     "description": "记忆列表每页展示条数",
     "default": 15,
-    "minimum": 5,
-    "maximum": 100
+    "slider": {
+      "min": 5,
+      "max": 100,
+      "step": 5
+    }
   },
   "enable_editing": {
-    "type": "boolean",
+    "type": "bool",
     "description": "允许在看板中编辑记忆内容、重要性及转移所属人格设定",
     "default": true
   },
   "enable_deletion": {
-    "type": "boolean",
+    "type": "bool",
     "description": "允许在看板中归档或删除记忆",
     "default": true
   }
