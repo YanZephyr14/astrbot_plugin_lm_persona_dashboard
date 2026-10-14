@@ -1,0 +1,14 @@
+{
+  "views": {
+    "dashboard": {
+      "title": "人格记忆看板",
+      "description": "按角色人格设定深度分类、检索与洞察 LivingMemory 记忆控制台。"
+    }
+  },
+  "pages": {
+    "dashboard": {
+      "title": "人格记忆看板",
+      "description": "按角色人格设定深度分类、检索与洞察 LivingMemory 记忆控制台。"
+    }
+  }
+}

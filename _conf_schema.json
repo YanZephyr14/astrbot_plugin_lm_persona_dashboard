@@ -1,0 +1,24 @@
+{
+  "custom_data_dir": {
+    "type": "string",
+    "description": "自定义 LivingMemory 数据目录路径（包含 livingmemory.db 的目录）。留空时自动探测。",
+    "default": ""
+  },
+  "page_size": {
+    "type": "number",
+    "description": "记忆列表每页展示条数",
+    "default": 15,
+    "minimum": 5,
+    "maximum": 100
+  },
+  "enable_editing": {
+    "type": "boolean",
+    "description": "允许在看板中编辑记忆内容、重要性及转移所属人格设定",
+    "default": true
+  },
+  "enable_deletion": {
+    "type": "boolean",
+    "description": "允许在看板中归档或删除记忆",
+    "default": true
+  }
+}

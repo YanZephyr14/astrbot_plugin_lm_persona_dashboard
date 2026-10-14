@@ -1,0 +1,7 @@
+name: "astrbot_plugin_lm_persona_dashboard"
+display_name: "LM 人格记忆看板"
+desc: "LivingMemory 专属辅助增强插件：按人格设定（Persona）深度分类、检索、洞察与管理长期记忆，彻底解决多角色记忆混杂问题。"
+version: "v1.0.0"
+author: "YanZephyr"
+repo: "https://github.com/YanZephyr14/astrbot_plugin_lm_persona_dashboard"
+astrbot_version: ">=4.24.0"

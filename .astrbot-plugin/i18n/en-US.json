@@ -1,0 +1,14 @@
+{
+  "views": {
+    "dashboard": {
+      "title": "Persona Dashboard",
+      "description": "Categorize, search and manage LivingMemory long-term memories by persona."
+    }
+  },
+  "pages": {
+    "dashboard": {
+      "title": "Persona Dashboard",
+      "description": "Categorize, search and manage LivingMemory long-term memories by persona."
+    }
+  }
+}

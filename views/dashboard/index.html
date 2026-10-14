@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LivingMemory 人格记忆看板</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div id="app" class="dashboard-container">
+    <!-- Top Global Header -->
+    <header class="dashboard-header">
+      <div class="header-brand">
+        <div class="brand-icon">🧠</div>
+        <div class="brand-text">
+          <h1 class="brand-title">LivingMemory <span>人格记忆看板</span></h1>
+          <p class="brand-desc">按角色设定（Persona）深度分类、检索、洞察与管理长期记忆</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="btn-db-status" class="status-badge" title="点击查看数据库状态或切换数据源">
+          <span class="status-dot"></span>
+          <span id="status-text">检测数据库中...</span>
+        </button>
+        <button id="btn-refresh" class="btn btn-secondary btn-icon" title="刷新数据">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+          <span>刷新</span>
+        </button>
+        <button id="btn-export-persona" class="btn btn-secondary btn-icon" title="导出当前人格的全部记忆">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          <span>导出</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace (Two-column layout) -->
+    <main class="dashboard-main">
+      <!-- Left: Persona Navigation Sidebar -->
+      <aside class="persona-sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-title">
+            <span>角色人格分类</span>
+            <span id="persona-total-badge" class="badge">0</span>
+          </div>
+          <div class="search-box">
+            <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" id="persona-filter-input" placeholder="过滤人格..." autocomplete="off" />
+          </div>
+        </div>
+        <div id="persona-list" class="persona-list">
+          <div class="loading-placeholder">正在加载人格列表...</div>
+        </div>
+      </aside>
+
+      <!-- Right: Persona Memory Explorer -->
+      <section class="content-panel">
+        <!-- Selected Persona Hero Card -->
+        <div class="persona-hero-card" id="persona-hero">
+          <div class="hero-top">
+            <div class="hero-avatar" id="hero-avatar">👤</div>
+            <div class="hero-info">
+              <div class="hero-title-wrap">
+                <h2 id="hero-name" class="hero-name">所有人格总览</h2>
+                <span id="hero-pid-badge" class="pill-badge" title="点击复制 Persona ID">__all__</span>
+                <span id="hero-configured-tag" class="tag tag-configured">系统配置</span>
+              </div>
+              <p id="hero-prompt" class="hero-prompt">查看当前数据库中跨所有角色的人格记忆全貌</p>
+            </div>
+            <div class="hero-quick-stats">
+              <div class="stat-box">
+                <span class="stat-num" id="stat-total">0</span>
+                <span class="stat-label">总记忆数</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-num active-color" id="stat-active">0</span>
+                <span class="stat-label">活跃条数</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-num atom-color" id="stat-atoms">0</span>
+                <span class="stat-label">原子记忆</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Type Distribution Bar -->
+          <div class="distribution-wrap" id="distribution-wrap">
+            <div class="dist-header">
+              <span class="dist-title">记忆类型分布</span>
+              <span class="dist-legend" id="dist-legend"></span>
+            </div>
+            <div class="dist-bar" id="dist-bar"></div>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="filter-toolbar">
+          <div class="filter-left">
+            <div class="search-input-wrap">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="text" id="memory-search-input" placeholder="在当前人格中检索记忆正文、ID 或标签..." />
+              <button id="btn-clear-search" class="clear-btn" style="display:none;">✕</button>
+            </div>
+            <select id="select-type" class="filter-select" title="按记忆类型筛选">
+              <option value="all">全部类型 (All Types)</option>
+              <option value="GENERAL">日常 (GENERAL)</option>
+              <option value="FACT">事实 (FACT)</option>
+              <option value="PREFERENCE">偏好 (PREFERENCE)</option>
+              <option value="EVENT">事件 (EVENT)</option>
+              <option value="OPINION">观点 (OPINION)</option>
+              <option value="EPISODIC">情景 (EPISODIC)</option>
+              <option value="RELATIONAL">关系 (RELATIONAL)</option>
+              <option value="PLANNED">计划 (PLANNED)</option>
+            </select>
+            <select id="select-status" class="filter-select" title="按记忆状态筛选">
+              <option value="all">全部状态</option>
+              <option value="active" selected>仅活跃 (Active)</option>
+              <option value="archived">已归档 (Archived)</option>
+            </select>
+            <select id="select-sort" class="filter-select" title="排序规则">
+              <option value="created_desc">最新创建优先</option>
+              <option value="created_asc">最早创建优先</option>
+              <option value="updated_desc">最近更新优先</option>
+              <option value="importance_desc">重要性最高优先</option>
+              <option value="importance_asc">重要性最低优先</option>
+            </select>
+          </div>
+          <div class="filter-right">
+            <button id="btn-reset-filters" class="btn btn-sm btn-ghost" title="重置筛选条件">重置筛选</button>
+          </div>
+        </div>
+
+        <!-- Batch Action Bar (Appears when cards are selected) -->
+        <div class="batch-bar" id="batch-bar" style="display: none;">
+          <div class="batch-left">
+            <input type="checkbox" id="checkbox-select-all" />
+            <span>已选择 <strong id="batch-count">0</strong> 条记忆</span>
+          </div>
+          <div class="batch-actions">
+            <span>批量转移所属人格：</span>
+            <select id="batch-target-persona" class="filter-select select-sm"></select>
+            <button id="btn-batch-transfer" class="btn btn-sm btn-primary">执行转移</button>
+            <button id="btn-batch-archive" class="btn btn-sm btn-secondary">批量归档</button>
+            <button id="btn-cancel-batch" class="btn btn-sm btn-ghost">取消选择</button>
+          </div>
+        </div>
+
+        <!-- Memories Stream List -->
+        <div class="memory-stream-container">
+          <div id="memory-cards-list" class="memory-cards-list">
+            <div class="loading-placeholder">正在加载记忆数据...</div>
+          </div>
+        </div>
+
+        <!-- Pagination Bar -->
+        <div class="pagination-bar" id="pagination-bar">
+          <div class="page-info">
+            共 <span id="page-total-items">0</span> 条记忆，当前第 <span id="page-current">1</span> / <span id="page-total-pages">1</span> 页
+          </div>
+          <div class="page-controls">
+            <button id="btn-prev-page" class="btn btn-sm btn-secondary" disabled>上一页</button>
+            <span id="page-numbers" class="page-numbers"></span>
+            <button id="btn-next-page" class="btn btn-sm btn-secondary" disabled>下一页</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal: Edit Memory & Transfer Persona -->
+    <div class="modal-overlay" id="edit-modal" style="display: none;">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>编辑记忆 & 人格归属维护</h3>
+          <button class="modal-close" id="btn-close-edit">✕</button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="edit-id" />
+          <div class="form-group">
+            <label for="edit-persona">归属角色人格 (Persona):</label>
+            <select id="edit-persona" class="form-control"></select>
+            <small class="form-hint">支持跨角色转移：修改后该记忆及其对应的原子记忆将立即划归到所选人格下。</small>
+          </div>
+          <div class="form-row">
+            <div class="form-group half">
+              <label for="edit-type">记忆分类 (Type):</label>
+              <select id="edit-type" class="form-control">
+                <option value="GENERAL">日常 (GENERAL)</option>
+                <option value="FACT">事实 (FACT)</option>
+                <option value="PREFERENCE">偏好 (PREFERENCE)</option>
+                <option value="EVENT">事件 (EVENT)</option>
+                <option value="OPINION">观点 (OPINION)</option>
+                <option value="EPISODIC">情景 (EPISODIC)</option>
+                <option value="RELATIONAL">关系 (RELATIONAL)</option>
+                <option value="PLANNED">计划 (PLANNED)</option>
+              </select>
+            </div>
+            <div class="form-group half">
+              <label for="edit-status">记忆状态 (Status):</label>
+              <select id="edit-status" class="form-control">
+                <option value="active">活跃 (active)</option>
+                <option value="archived">已归档 (archived)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="edit-importance">重要性权重 (Importance): <span id="edit-importance-val">0.5</span></label>
+            <input type="range" id="edit-importance" min="0" max="1" step="0.05" class="range-slider" />
+          </div>
+          <div class="form-group">
+            <label for="edit-text">记忆正文内容:</label>
+            <textarea id="edit-text" rows="5" class="form-control textarea" placeholder="记忆正文..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" id="btn-cancel-edit">取消</button>
+          <button class="btn btn-primary" id="btn-save-edit">保存更改</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Database & Data Source Settings -->
+    <div class="modal-overlay" id="db-modal" style="display: none;">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>LivingMemory 数据库状态与数据源切换</h3>
+          <button class="modal-close" id="btn-close-db">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="db-info-panel" id="db-info-panel">
+            <div class="info-row">
+              <span class="info-label">当前数据库路径：</span>
+              <code class="info-code" id="current-db-path">-</code>
+            </div>
+            <div class="info-row">
+              <span class="info-label">数据库状态：</span>
+              <span id="current-db-status" class="info-status">检测中</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">记忆总数：</span>
+              <span id="current-db-docs">-</span> 条（原子记忆: <span id="current-db-atoms">-</span>）
+            </div>
+            <div class="info-row">
+              <span class="info-label">人格设定总数：</span>
+              <span id="current-db-personas">-</span> 个人格分类
+            </div>
+          </div>
+
+          <h4 class="section-title">检测到的候选数据源列表</h4>
+          <p class="section-hint">点击以下已发现的数据库可即时切换看板连接：</p>
+          <div class="candidate-list" id="candidate-list"></div>
+
+          <h4 class="section-title" style="margin-top: 16px;">自定义数据库路径</h4>
+          <div class="custom-path-box">
+            <input type="text" id="custom-db-input" class="form-control" placeholder="输入 livingmemory.db 的绝对路径或其目录..." />
+            <button id="btn-switch-db" class="btn btn-primary">切换连接</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" id="btn-cancel-db">关闭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+  </div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
